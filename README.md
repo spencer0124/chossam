@@ -1,4 +1,4 @@
-# 목동 조쌤 영어학원
+# 목동조쌤 영어학원
 
 The academy's website: a board of notices and the programme banner.
 

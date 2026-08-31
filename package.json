@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "목동 조쌤 영어학원 — static site. Notion is the source of truth for posts only; everything else lives in this repo.",
+  "description": "목동조쌤 영어학원 — static site. Notion is the source of truth for posts only; everything else lives in this repo.",
   "engines": {
     "node": ">=22"
   },
@@ -15,7 +15,8 @@
     "typecheck": "astro sync && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "sync": "tsx scripts/sync-notion.ts"
+    "sync": "tsx scripts/sync-notion.ts",
+    "icons": "tsx scripts/make-icons.ts"
   },
   "dependencies": {
     "@astrojs/react": "^6.0.4",
@@ -35,6 +36,8 @@
     "@types/react-dom": "^19.2.5",
     "@vitejs/plugin-react": "^6.1.1",
     "jsdom": "^30.0.1",
+    "png-to-ico": "^3.0.2",
+    "sharp": "^0.35.4",
     "tsx": "^4.23.13",
     "typescript": "^6.0.3",
     "vitest": "^4.1.11"

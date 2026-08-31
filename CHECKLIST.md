@@ -110,8 +110,16 @@ visibly broken page. Now covered by three `getComputedStyle` regression tests.
       The sync integration is read-only by design, so this could not be done by API.
 - [x] Re-synced: 3 files pruned, 19 posts remain, site no longer shows them
 
-## Done
+## Phase 8 — Icons, sharing card, and a live pipeline test
 
-The site is live and the pipeline is closed: add a row in Notion and it appears
-within the hour, or immediately via Actions → **Sync Notion content** → Run
-workflow. Nothing outstanding.
+- [ ] Favicon rebuilt from the crest shown in the site header (the 200×200
+      full-colour original, not the 50×51 desaturated copy)
+- [ ] Open Graph card: image is the logo; title `목동조쌤 영어학원`;
+      description `공지사항 및 과정 안내`
+- [ ] Verify the card renders (fetch the built HTML, check the referenced files exist)
+- [ ] Dummy notices added to 공지사항 in Notion so paging has something to page:
+      enough rows for 2+ pages, including one with images and one long body
+- [ ] Trigger **Sync Notion content** by hand; confirm it commits and deploys
+- [ ] Report the scheduled sync time in local terms
+- [ ] Confirm on the live site: pager reads 1 / N, page 2 works, images in a post
+      body are served from this repo (no Notion URLs)

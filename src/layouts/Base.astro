@@ -18,6 +18,9 @@ interface Props {
 
 const { title, description = site.description } = Astro.props
 const pageTitle = title ? `${title} | ${site.name}` : site.name
+
+// A shared post links to that post; a shared home page is the academy itself.
+const ogTitle = pageTitle
 ---
 
 <!doctype html>
@@ -28,15 +31,23 @@ const pageTitle = title ? `${title} | ${site.name}` : site.name
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content={site.brandColor} />
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="canonical" href={new URL(Astro.url.pathname, site.url).href} />
 
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={pageTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL('/og-image.png', site.url).href} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={site.og.description} />
+    <meta property="og:url" content={new URL(Astro.url.pathname, site.url).href} />
+    <meta property="og:image" content={new URL(site.og.image, site.url).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={site.og.description} />
+    <meta name="twitter:image" content={new URL(site.og.image, site.url).href} />
 
     <!-- Pretendard, dynamic subset: only the glyphs the page uses are fetched. -->
     <link
