@@ -1,0 +1,72 @@
+# Pull the notice database out of Notion and commit it.
+#
+# The commit is the deploy trigger: Cloudflare Pages builds whatever lands on
+# this branch. Nothing here runs at build time, so a Notion outage delays new
+# notices rather than breaking the site.
+#
+# GitHub disables scheduled workflows after 60 days without repository activity.
+# The sync's own commits count as activity, which is one reason this job commits
+# directly rather than opening pull requests nobody merges.
+name: Sync Notion content
+
+on:
+  schedule:
+    # Hourly. Not on the hour: GitHub's scheduler is busiest then and delays runs.
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+# Never let two syncs push at once. Queue rather than cancel: a cancelled sync
+# would leave the newer content unpublished until the next hour.
+concurrency:
+  group: sync-notion
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      # Third-party actions are pinned by commit SHA: a tag can be moved.
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync from Notion
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+        run: npm run sync
+
+      - name: Commit if the content changed
+        run: |
+          set -euo pipefail
+          paths="src/content/posts src/data/boards.json src/assets/notion"
+
+          if [ -z "$(git status --porcelain -- $paths)" ]; then
+            echo "Notion has nothing new."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- $paths
+          git commit -m "chore(content): sync notion posts"
+          git push
+
+          # No [skip ci] marker: this commit is exactly the one that should
+          # deploy. It cannot re-trigger this workflow, because pushes made with
+          # GITHUB_TOKEN do not start new workflow runs.
+          echo "### Published new content" >> "$GITHUB_STEP_SUMMARY"
+          git show --stat --oneline HEAD >> "$GITHUB_STEP_SUMMARY"

@@ -1,63 +1,57 @@
-# PR / main 基础质量门禁：减轻维护者手工验证，仅 Founder 需关注高影响路径 Review
+# Types, tests, build. No Notion token: the build reads committed files only,
+# which is the point of the sync design — CI can verify a deploy without any
+# credential at all.
+#
+# Deliberately absent: `npm run sync -- --check`. Notion having newer content
+# than the last sync commit is the normal state between hourly runs, not a
+# broken pull request.
 name: CI
 
 on:
-  pull_request:
-    branches: [main]
   push:
-    branches: [main]
+    branches: [main, dev, 'feat/**']
+  pull_request:
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
-  lint-and-types:
-    name: Lint & type-check
+  check:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-      - run: yarn install --frozen-lockfile
-      - run: yarn lint
-      - run: yarn type-check
+    timeout-minutes: 10
 
-  test:
-    name: Unit tests
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-      - run: yarn install --frozen-lockfile
-      - run: yarn test --passWithNoTests
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-  lockfile:
-    name: Lockfile consistency
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version-file: .nvmrc
-          cache: yarn
-      - run: yarn deps:check-lockfile
+          node-version: 22
+          cache: npm
 
-  docs-site:
-    name: VitePress build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-          cache: yarn
-      - run: yarn install --frozen-lockfile
-      - run: yarn docs:site:build
-        env:
-          VITE_GISCUS_ENABLED: 'false'
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Assert the build carries no Notion URLs
+        # A presigned Notion URL in the output would 403 about an hour after the
+        # build. This is the regression test for the whole image pipeline.
+        run: |
+          if grep -rlE 'file\.notion\.com|prod-files-secure|amazonaws\.com' dist; then
+            echo "::error::Built output references Notion-hosted files; images were not downloaded."
+            exit 1
+          fi
+          echo "No Notion URLs in dist/."

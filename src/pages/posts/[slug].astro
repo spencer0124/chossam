@@ -1,0 +1,90 @@
+---
+/**
+ * One notice. Built for every synced post; nothing is fetched at request time.
+ */
+import { getCollection, render, type CollectionEntry } from 'astro:content'
+import Base from '../../layouts/Base.astro'
+import { formatKoreanDate } from '../../lib/date'
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts')
+  return posts.map(post => ({ params: { slug: post.id }, props: { post } }))
+}
+
+// Declared rather than inferred from getStaticPaths: annotating that function
+// with `GetStaticPaths` widens the props back to `unknown`.
+type Props = { post: CollectionEntry<'posts'> }
+
+const { post } = Astro.props
+const { Content } = await render(post)
+---
+
+<Base title={post.data.title}>
+  <article>
+    <nav class="back">
+      <a href={`/?board=${encodeURIComponent(post.data.board)}`}>← {post.data.board}</a>
+    </nav>
+
+    <header>
+      <h1>{post.data.title}</h1>
+      {
+        post.data.date && (
+          <time datetime={post.data.date}>{formatKoreanDate(post.data.date)}</time>
+        )
+      }
+    </header>
+
+    <div class="body">
+      <Content />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .back {
+    padding: 24px 0 8px;
+    font-size: 14px;
+  }
+
+  .back a {
+    color: #6b7684;
+    text-decoration: none;
+  }
+
+  header {
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e5e8eb;
+  }
+
+  h1 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    line-height: 1.4;
+    letter-spacing: -0.02em;
+  }
+
+  time {
+    color: #8b95a1;
+    font-size: 14px;
+  }
+
+  .body {
+    padding-top: 28px;
+    font-size: 16px;
+    line-height: 1.75;
+    color: #333d4b;
+  }
+
+  .body :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .body :global(h1),
+  .body :global(h2),
+  .body :global(h3) {
+    margin: 32px 0 12px;
+    line-height: 1.4;
+  }
+</style>

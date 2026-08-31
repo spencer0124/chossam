@@ -1,0 +1,49 @@
+---
+/**
+ * Home: pick a board, read its notices, then the programme banner.
+ *
+ * Every post is rendered into the HTML here — the island only decides which
+ * ones are visible — so the page works with JavaScript disabled and a crawler
+ * sees the whole notice list.
+ */
+import { Image } from 'astro:assets'
+import { getCollection } from 'astro:content'
+import BoardBrowser from '../components/BoardBrowser'
+import Base from '../layouts/Base.astro'
+import promo from '../assets/promo-golden-time.png'
+import { boards } from '../lib/boards'
+
+const posts = (await getCollection('posts')).map(entry => ({
+  slug: entry.id,
+  title: entry.data.title,
+  board: entry.data.board,
+  date: entry.data.date
+}))
+---
+
+<Base>
+  <BoardBrowser client:load boards={boards} posts={posts} />
+
+  <figure class="promo">
+    <Image
+      src={promo}
+      alt="초5-중1 골든타임 프로그램. 33개월이면 고1 모의고사 1등급을 받습니다. 5학년에 시작해 33개월 꾸준히 공부하면 학생들은 고1 모의고사 1등급을 받고 중2부터 고2 과정을 공부합니다. 초5도 가능합니다. 당연히 뒤쳐진 고학년도 가능합니다!"
+      widths={[480, 720, 900]}
+      sizes="(max-width: 900px) 100vw, 900px"
+      loading="eager"
+    />
+  </figure>
+</Base>
+
+<style>
+  .promo {
+    margin: 56px 0 0;
+  }
+
+  .promo :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+  }
+</style>

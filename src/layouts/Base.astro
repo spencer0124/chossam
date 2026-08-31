@@ -1,0 +1,153 @@
+---
+/**
+ * The page shell: fonts, tokens, header, footer.
+ *
+ * SDS colours are pulled from the TypeScript tokens and handed to CSS through
+ * `define:vars`, so the stylesheet and the React island read the same values
+ * and a token change cannot leave half the page behind.
+ */
+import { Image } from 'astro:assets'
+import { SdsColors } from '@skkuverse/tokens'
+import logo from '../assets/logo.png'
+import { site } from '../config/site'
+
+interface Props {
+  title?: string
+  description?: string
+}
+
+const { title, description = site.description } = Astro.props
+const pageTitle = title ? `${title} | ${site.name}` : site.name
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content={site.brandColor} />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, site.url).href} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL('/og-image.png', site.url).href} />
+
+    <!-- Pretendard, dynamic subset: only the glyphs the page uses are fetched. -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css"
+    />
+  </head>
+
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">
+        <Image src={logo} alt="" width={40} height={40} densities={[1, 2]} />
+        <span>{site.name}</span>
+      </a>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <p class="contact">
+        <span>{site.contact.address}</span>
+        <a href={`tel:${site.contact.phone.replace(/-/g, '')}`}>{site.contact.phone}</a>
+      </p>
+    </footer>
+
+    <style
+      define:vars={{
+        grey100: SdsColors.grey100,
+        grey200: SdsColors.grey200,
+        grey500: SdsColors.grey500,
+        grey700: SdsColors.grey700,
+        grey900: SdsColors.grey900,
+        brand: site.brandColor
+      }}
+    >
+      :root {
+        --content-width: 900px;
+        font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+          system-ui, sans-serif;
+        color: var(--grey900);
+        background: #fff;
+      }
+
+      :global(*, *::before, *::after) {
+        box-sizing: border-box;
+      }
+
+      :global(body) {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .site-header {
+        border-bottom: 1px solid var(--grey200);
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        max-width: var(--content-width);
+        margin: 0 auto;
+        padding: 20px;
+        color: inherit;
+        text-decoration: none;
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      main {
+        flex: 1;
+        width: 100%;
+        max-width: var(--content-width);
+        margin: 0 auto;
+        padding: 8px 20px 64px;
+      }
+
+      .site-footer {
+        border-top: 1px solid var(--grey100);
+        padding: 28px 20px 40px;
+      }
+
+      .contact {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px 32px;
+        margin: 0;
+        color: var(--grey700);
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      .contact a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      @media (max-width: 480px) {
+        .brand {
+          font-size: 19px;
+          padding: 16px 20px;
+        }
+      }
+    </style>
+  </body>
+</html>
