@@ -96,11 +96,22 @@ visibly broken page. Now covered by three `getComputedStyle` regression tests.
       **spencer0124/chossam**. Note: `gh` defaulted to the *upstream*
       `notionnext-org/NotionNext`, so every command needs `--repo`; the repo
       default is now pinned.
-- [ ] Cloudflare Pages: build `npm run build`, output `dist`, Node 22
+- [x] Committed `ddf4d1fd`, pushed, fast-forwarded feat → dev → main
+- [x] CI caught a real gap the local machine hid: `astro:content` types are
+      generated into `.astro/types.d.ts` by `astro sync`, which a fresh clone has
+      never run. `typecheck` now syncs first (`9c11eab9`).
+- [x] Cloudflare Pages: the project did not exist at all — the old DEPLOY.md
+      described `chossam.pages.dev` as a plan, not a fact. Created it connected to
+      `spencer0124/chossam`: production branch `main`, preset Astro,
+      `npm run build` → `dist`, `NODE_VERSION=22`. First build succeeded in ~31s.
+- [x] Live at https://chossam.pages.dev — 7 tabs, 19 posts, banner at one fixed
+      position across every tab, 0 Notion URLs in the served HTML
 - [x] Notion test rows deleted in the UI (19 rows left; recoverable from 휴지통).
       The sync integration is read-only by design, so this could not be done by API.
 - [x] Re-synced: 3 files pruned, 19 posts remain, site no longer shows them
 
-## Left for you
+## Done
 
-- [ ] Merge to `dev` after the Pages preview looks right
+The site is live and the pipeline is closed: add a row in Notion and it appears
+within the hour, or immediately via Actions → **Sync Notion content** → Run
+workflow. Nothing outstanding.
