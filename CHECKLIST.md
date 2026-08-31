@@ -112,14 +112,26 @@ visibly broken page. Now covered by three `getComputedStyle` regression tests.
 
 ## Phase 8 — Icons, sharing card, and a live pipeline test
 
-- [ ] Favicon rebuilt from the crest shown in the site header (the 200×200
-      full-colour original, not the 50×51 desaturated copy)
-- [ ] Open Graph card: image is the logo; title `목동조쌤 영어학원`;
-      description `공지사항 및 과정 안내`
-- [ ] Verify the card renders (fetch the built HTML, check the referenced files exist)
-- [ ] Dummy notices added to 공지사항 in Notion so paging has something to page:
-      enough rows for 2+ pages, including one with images and one long body
-- [ ] Trigger **Sync Notion content** by hand; confirm it commits and deploys
-- [ ] Report the scheduled sync time in local terms
-- [ ] Confirm on the live site: pager reads 1 / N, page 2 works, images in a post
-      body are served from this repo (no Notion URLs)
+- [x] Favicon, touch icon and sharing card all generated from the crest by
+      `scripts/make-icons.ts` — one source, so they cannot drift from the header
+- [x] Open Graph: crest on white 1200×630, title `목동조쌤 영어학원`,
+      description `공지사항 및 과정 안내`, plus Twitter card tags
+- [x] Verified live: `favicon.ico` 200, `og-image.png` 200, all tags served
+- [x] 8 dummy notices added — 공지사항 now holds 13, i.e. 3 pages — including a
+      long body (headings/lists/quote/bold), two uploaded images, and a
+      deliberately long title
+- [x] Rich markdown now styled (lists, quotes, bold, tables, code)
+- [x] Manual sync run twice. First: 27 rows, 9 files, 2 images downloaded.
+      Second, after a text edit: exactly 2 files — incremental, as designed.
+- [x] **Scheduled sync: every hour at :17** (`cron: '17 * * * *'`; cron minutes are
+      timezone-independent, so :17 KST)
+- [x] Live: pager 1/3 → 2/3 → 3/3, banner fixed at y=516 on every page; both post
+      images served from `/_astro/*.webp`; 0 Notion URLs on any page
+- [x] 390px: every row exactly 52px, long titles truncate rather than wrap
+- [x] 목동조쌤 unspaced everywhere — code, docs, Notion row titles and page bodies
+
+## Done
+
+The site is live and the loop is closed. Add a row in Notion and it appears
+within the hour — or immediately via Actions → **Sync Notion content** →
+Run workflow. Nothing outstanding.
