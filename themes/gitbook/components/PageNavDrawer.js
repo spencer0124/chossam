@@ -2,7 +2,7 @@ import { useGlobal } from '@/lib/global'
 import { useGitBookGlobal } from '@/themes/gitbook'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
-import NavPostList from './NavPostList'
+import BoardNav from '@/components/BoardNav'
 
 /**
  * 悬浮抽屉 页面内导航
@@ -13,7 +13,6 @@ import NavPostList from './NavPostList'
  */
 const PageNavDrawer = props => {
   const { pageNavVisible, changePageNavVisible } = useGitBookGlobal()
-  const { filteredNavPages } = props
   const { locale } = useGlobal()
   const router = useRouter()
   const switchVisible = () => {
@@ -35,7 +34,7 @@ const PageNavDrawer = props => {
           className={`${pageNavVisible ? 'animate__slideInLeft ' : '-ml-80 animate__slideOutLeft'} 
                       overflow-y-hidden shadow-card w-72 duration-200 fixed left-2 bottom-20 rounded-xl py-2 bg-white dark:bg-hexo-black-gray dark:border dark:border-black`}>
           <div className='px-4 pb-2 flex justify-between items-center border-b border-gray-200 dark:border-black font-bold text-gray-800 dark:text-gray-200'>
-            <span>{locale.COMMON.ARTICLE_LIST}</span>
+            <span>목차</span>
             <i
               className='fas fa-times p-1 cursor-pointer text-gray-500 dark:text-gray-400'
               onClick={() => {
@@ -44,7 +43,10 @@ const PageNavDrawer = props => {
           </div>
           {/* 所有文章列表 */}
           <div className='text-gray-600 dark:text-gray-400 h-96 overflow-y-scroll p-3'>
-            <NavPostList filteredNavPages={filteredNavPages} />
+            <BoardNav
+              {...props}
+              onNavigate={() => changePageNavVisible(false)}
+            />
           </div>
         </div>
       </div>

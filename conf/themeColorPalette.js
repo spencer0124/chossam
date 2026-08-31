@@ -49,7 +49,19 @@ const THEME_COLOR_DEFAULTS = {
     BORDER_DARK: '#283446'
   },
   game: { PRIMARY: '#22c55e', BG: '#ffffff' },
-  gitbook: { PRIMARY: '#16a34a' },
+  // chossam — SDS(Toss TDS 기반) 토큰 + 학원 로고 레드.
+  // 이 값들이 --gitbook-console-* 변수가 되어 lib/themeConsoleStyle.js 를 통해
+  // 루트 배경과 Tailwind 색 유틸리티(!important) 전체에 배포된다.
+  // 원본 토큰: src/design-system/tokens/colors.ts, styles/sds-tokens.css
+  gitbook: {
+    PRIMARY: '#B40407', //  brand500 — 로고 문장에서 샘플링
+    PRIMARY_HOVER: '#9B0306', //  brand600
+    BG: '#F7F7F8', //  SdsColors.greyBackground
+    CARD: '#FFFFFF', //  SdsColors.layeredBackground
+    TEXT: '#191F28', //  SdsColors.grey900
+    TEXT_SECONDARY: '#6B7684', //  SdsColors.grey600
+    BORDER: '#E5E8EB' //  SdsColors.grey200
+  },
   heo: {
     PRIMARY: '#4f65f0',
     BG: '#f7f9fe',

@@ -197,6 +197,7 @@ const SEO = props => {
       <meta name='twitter:image:alt' content={title} />
 
       <link rel='icon' href={BLOG_FAVICON} />
+      <link rel='apple-touch-icon' href='/apple-touch-icon.png' />
 
       {COMMENT_WEBMENTION_ENABLE && (
         <>
@@ -371,7 +372,7 @@ const getSEOMeta = (props, router, locale) => {
   switch (router.route) {
     case '/':
       return {
-        title: `${siteInfo?.title} | ${siteInfo?.description}`,
+        title: `${siteInfo?.title}`, //  홈은 사이트명만 (설명 suffix 제거)
         description: `${siteInfo?.description}`,
         image: `${siteInfo?.pageCover}`,
         slug: '',
@@ -461,9 +462,11 @@ const getSEOMeta = (props, router, locale) => {
         ? post?.category?.[0]
         : post?.category
       return {
-        title: post
-          ? `${post?.title} | ${siteInfo?.title}`
-          : `${siteInfo?.title} | loading`,
+        // post.title 이 비어 있는 페이지(예: 데이터베이스 페이지)에서
+        // "null | 사이트명" 이 되지 않도록 사이트명만 남긴다
+        title: post?.title
+          ? `${post.title} | ${siteInfo?.title}`
+          : `${siteInfo?.title}`,
         description: post?.summary,
         type: post?.type,
         slug: post?.slug,

@@ -1,5 +1,4 @@
 import Collapse from '@/components/Collapse'
-import DarkModeButton from '@/components/DarkModeButton'
 import { siteConfig } from '@/lib/config'
 import { useGlobal } from '@/lib/global'
 import { SignInButton, SignedOut, UserButton } from '@clerk/nextjs'
@@ -8,7 +7,7 @@ import CONFIG from '../config'
 import LogoBar from './LogoBar'
 import { MenuBarMobile } from './MenuBarMobile'
 import { MenuItemDrop } from './MenuItemDrop'
-import SearchInput from './SearchInput'
+import { useGitBookGlobal } from '@/themes/gitbook'
 
 /**
  * 页头：顶部导航栏 + 菜单
@@ -21,6 +20,7 @@ export default function Header(props) {
   const collapseRef = useRef(null)
 
   const { locale } = useGlobal()
+  const { pageNavVisible, changePageNavVisible } = useGitBookGlobal()
 
   const defaultLinks = [
     {
@@ -95,15 +95,14 @@ export default function Header(props) {
                 <UserButton />
               </>
             )}
-            <DarkModeButton className='text-sm items-center h-full hidden md:flex' />
-            <SearchInput className='hidden md:flex md:w-52 lg:w-72' />
             {/* 折叠按钮、仅移动端显示 */}
             <div className='mr-1 flex md:hidden justify-end items-center space-x-4  dark:text-gray-200'>
-              <DarkModeButton className='flex text-md items-center h-full' />
+              {/* 모바일 햄버거 → PC 좌측 목차와 같은 내용을 서랍으로 연다 */}
               <div
-                onClick={toggleMenuOpen}
+                onClick={() => changePageNavVisible(!pageNavVisible)}
+                aria-label='목차 열기'
                 className='cursor-pointer text-lg hover:scale-110 duration-150'>
-                {isOpen ? (
+                {pageNavVisible ? (
                   <i className='fas fa-times' />
                 ) : (
                   <i className='fa-solid fa-bars' />

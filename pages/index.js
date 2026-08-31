@@ -6,6 +6,7 @@ import {
   getPostBlocks
 } from '@/lib/db/SiteDataApi'
 import { formatNotionBlock } from '@/lib/db/notion/getPostBlocks'
+import { filterCollectionViewData } from '@/lib/db/notion/filterCollectionViewData'
 import { generateRobotsTxt } from '@/lib/utils/robots.txt'
 import { generateRss, shouldGenerateRssForLocale } from '@/lib/utils/rss'
 import { generateSitemapXml } from '@/lib/utils/sitemap.xml'
@@ -128,6 +129,38 @@ export async function getStaticProps(req) {
   if (!POST_LIST_PREVIEW) {
     props.posts = cleanPostSummaries(props.posts)
   }
+  // 커스텀 홈 — 노션 페이지 하나를 홈 본문으로 렌더한다.
+  // HOME_PAGE_ID 가 있으면 그 페이지를, 없으면 DB 에서 slug 가 HOME_PAGE_SLUG 인 행을 쓴다.
+  const HOME_PAGE_ID = siteConfig('HOME_PAGE_ID', '', props?.NOTION_CONFIG)
+  const HOME_PAGE_SLUG = siteConfig('HOME_PAGE_SLUG', 'home', props?.NOTION_CONFIG)
+  const homeEntry = HOME_PAGE_ID
+    ? { id: HOME_PAGE_ID, title: siteConfig('TITLE', '', props?.NOTION_CONFIG) }
+    : props.allPages?.find(
+        page => page?.slug === HOME_PAGE_SLUG && page?.status === 'Published'
+      )
+
+  if (homeEntry?.id) {
+    try {
+      const rawHomeBlockMap = await getPostBlocks(homeEntry.id, 'index')
+      const blockMap = adapterNotionBlockMap(rawHomeBlockMap)
+      if (blockMap?.block) {
+        blockMap.block = formatNotionBlock(blockMap.block)
+      }
+      // 인라인 DB 뷰의 필터/정렬을 글 페이지와 동일하게 적용
+      filterCollectionViewData(blockMap)
+      props.homePost = {
+        id: homeEntry.id,
+        title: homeEntry.title || '',
+        blockMap: blockMap || null
+      }
+    } catch (err) {
+      console.warn('[home] 홈 페이지 블록 로드 실패:', err?.message)
+      props.homePost = null
+    }
+  } else {
+    props.homePost = null
+  }
+
   props.latestPosts = cleanPostSummaries(props.latestPosts)
   delete props.allPages
 

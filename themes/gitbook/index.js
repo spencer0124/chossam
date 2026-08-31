@@ -18,31 +18,25 @@ import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import SmartLink from '@/components/SmartLink'
 import { useRouter } from 'next/router'
-import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import Announcement from './components/Announcement'
 import ArticleAround from './components/ArticleAround'
 import ArticleInfo from './components/ArticleInfo'
 import { ArticleLock } from './components/ArticleLock'
 import BlogArchiveItem from './components/BlogArchiveItem'
-import BottomMenuBar from './components/BottomMenuBar'
 import Catalog from './components/Catalog'
 import CatalogDrawerWrapper from './components/CatalogDrawerWrapper'
 import CategoryItem from './components/CategoryItem'
-import Footer from './components/Footer'
 import Header from './components/Header'
 import InfoCard from './components/InfoCard'
 import JumpToTopButton from './components/JumpToTopButton'
-import NavPostList from './components/NavPostList'
+import BoardNav from '@/components/BoardNav'
 import PageNavDrawer from './components/PageNavDrawer'
 import RevolverMaps from './components/RevolverMaps'
 import TagItemMini from './components/TagItemMini'
 import CONFIG from './config'
 import { Style } from './style'
 
-const AlgoliaSearchModal = dynamic(
-  () => import('@/components/AlgoliaSearchModal'),
-  { ssr: false }
-)
 const WWAds = dynamic(() => import('@/components/WWAds'), { ssr: false })
 
 // 主题全局变量
@@ -111,7 +105,6 @@ const LayoutBase = props => {
   const [pageNavVisible, changePageNavVisible] = useState(false)
   const [filteredNavPages, setFilteredNavPages] = useState(allNavPages)
 
-  const searchModal = useRef(null)
 
   useEffect(() => {
     setFilteredNavPages(getNavPagesWithLatest(allNavPages, latestPosts, post))
@@ -125,7 +118,6 @@ const LayoutBase = props => {
   return (
     <ThemeGlobalGitbook.Provider
       value={{
-        searchModal,
         tocVisible,
         changeTocVisible,
         filteredNavPages,
@@ -138,9 +130,7 @@ const LayoutBase = props => {
 
       <div
         id='theme-gitbook'
-        className={`${siteConfig('FONT_STYLE')} pb-16 md:pb-0 scroll-smooth bg-white dark:bg-black w-full h-full min-h-screen justify-center dark:text-gray-300`}>
-        <AlgoliaSearchModal cRef={searchModal} {...props} />
-
+        className={`${siteConfig('FONT_STYLE')} scroll-smooth bg-white dark:bg-black w-full h-full min-h-screen justify-center dark:text-gray-300`}>
         {/* 顶部导航栏 */}
         <Header {...props} />
 
@@ -157,10 +147,9 @@ const LayoutBase = props => {
                   {slotLeft}
 
                   {/* 所有文章列表 */}
-                  <NavPostList filteredNavPages={filteredNavPages} {...props} />
+                  <BoardNav {...props} />
                 </div>
                 {/* 页脚 */}
-                <Footer {...props} />
               </div>
             </div>
           )}
@@ -184,43 +173,13 @@ const LayoutBase = props => {
 
             {/* 底部 */}
             <div className='md:hidden'>
-              <Footer {...props} />
             </div>
           </div>
 
-          {/*  右侧 */}
-          {fullWidth ? null : (
-            <div
-              className={
-                'w-72 hidden 2xl:block dark:border-transparent flex-shrink-0 relative z-10 '
-              }>
-              <div className='py-14 sticky top-0'>
-                <ArticleInfo post={props?.post ? props?.post : props.notice} />
+          {/* 우측 위젯 컬럼 제거:
+            * InfoCard(로고+RSS) / Live2D(마스코트) / RevolverMaps / 광고 슬롯이 들어있었다.
+            * 원페이지 사이트라 좌측 목차만으로 충분하고, 마스코트는 학원 사이트에 안 맞는다. */}
 
-                <div>
-                  {/* 桌面端目录 */}
-                  <Catalog {...props} />
-                  {slotRight}
-                  {router.route === '/' && (
-                    <>
-                      <InfoCard {...props} />
-                      {siteConfig(
-                        'GITBOOK_WIDGET_REVOLVER_MAPS',
-                        null,
-                        CONFIG
-                      ) === 'true' && <RevolverMaps />}
-                      <Live2D />
-                    </>
-                  )}
-                  {/* gitbook主题首页只显示公告 */}
-                  <Announcement {...props} />
-                </div>
-
-                <AdSlot type='in-article' />
-                <Live2D />
-              </div>
-            </div>
-          )}
         </main>
 
         {GITBOOK_LOADING_COVER && <LoadingCover />}
@@ -232,7 +191,7 @@ const LayoutBase = props => {
         <PageNavDrawer {...props} filteredNavPages={filteredNavPages} />
 
         {/* 移动端底部导航栏 */}
-        <BottomMenuBar {...props} />
+        {/* 모바일 하단 바 제거: '글 목록' 버튼이 상단 햄버거와 같은 동작이라 중복 */}
       </div>
     </ThemeGlobalGitbook.Provider>
   )
@@ -245,47 +204,43 @@ const LayoutBase = props => {
  * @returns
  */
 const LayoutIndex = props => {
+  const { homePost, siteInfo } = props
   const router = useRouter()
   const index = siteConfig('GITBOOK_INDEX_PAGE', 'about', CONFIG)
-  const [hasRedirected, setHasRedirected] = useState(false) // 添加状态追踪是否已重定向
+  const [hasRedirected, setHasRedirected] = useState(false)
 
+  // 커스텀 홈: pages/index.js 가 넘겨준 homePost 가 있으면
+  // 노션 홈 페이지를 그대로 SSG 렌더한다 (리다이렉트 없음 → 홈 SEO 유지).
+  const hasHome = !!homePost?.blockMap
+
+  // homePost 가 없을 때만 기존 동작(GITBOOK_INDEX_PAGE 로 이동)으로 폴백
   useEffect(() => {
-    const tryRedirect = async () => {
-      if (!hasRedirected) {
-        // 仅当未重定向时执行
-        setHasRedirected(true) // 更新状态，防止多次执行
+    if (hasHome || hasRedirected || !index) return
+    setHasRedirected(true)
+    router.push(index)
+  }, [hasHome, hasRedirected, index])
 
-        // 重定向到指定文章
-        await router.push(index)
+  if (!hasHome) {
+    return null
+  }
 
-        // 使用setTimeout检查页面加载情况
-        setTimeout(() => {
-          const article = document.querySelector(
-            '#article-wrapper #notion-article'
-          )
-          if (!article) {
-            console.log('请检查您的Notion数据库中是否包含此slug页面： ', index)
+  return (
+    <>
+      <Head>
+        <title>{siteInfo?.title || homePost?.title}</title>
+      </Head>
 
-            // 显示错误信息
-            const containerInner = document.querySelector(
-              '#theme-gitbook #container-inner'
-            )
-            const newHTML = `<h1 class="text-3xl pt-12 dark:text-gray-300">配置有误</h1><blockquote class="notion-quote notion-block-ce76391f3f2842d386468ff1eb705b92"><div>请在您的notion中添加一个slug为${index}的文章</div></blockquote>`
-            containerInner?.insertAdjacentHTML('afterbegin', newHTML)
-          }
-        }, 2000)
-      }
-    }
+      <div id='container'>
+        <section className='px-1'>
+          <div id='article-wrapper'>
+            <NotionPage post={homePost} />
+          </div>
+        </section>
 
-    if (index) {
-      console.log('重定向', index)
-      tryRedirect()
-    } else {
-      console.log('无重定向', index)
-    }
-  }, [index, hasRedirected]) // 将 hasRedirected 作为依赖确保状态变更时更新
-
-  return null // 不渲染任何内容
+        <CatalogDrawerWrapper {...props} post={homePost} />
+      </div>
+    </>
+  )
 }
 
 /**
@@ -308,11 +263,10 @@ const LayoutSlug = props => {
   const router = useRouter()
   // 如果是文档首页文章，则修改浏览器标签
   const index = siteConfig('GITBOOK_INDEX_PAGE', 'about', CONFIG)
-  const basePath = router.asPath.split('?')[0]
-  const title =
-    basePath?.indexOf(index) > 0
-      ? `${post?.title} | ${siteInfo?.description}`
-      : `${post?.title} | ${siteInfo?.title}`
+  // 제목이 없는 페이지(예: 데이터베이스 페이지)는 "null | …" 이 되므로 사이트명만 쓴다
+  const title = post?.title
+    ? `${post.title} | ${siteInfo?.title}`
+    : `${siteInfo?.title}`
 
   const waiting404 = siteConfig('POST_WAITING_TIME_FOR_404') * 1000
   useEffect(() => {

@@ -17,6 +17,7 @@ import { useRouter } from 'next/router'
 import PropTypes from 'prop-types'
 import { useEffect, useState } from 'react'
 import { getStaticPathsBase } from '@/lib/build/staticPaths'
+import { getHomeLinkedPageIds } from '@/lib/build/homeLinkedPages'
 import { isExport } from '@/lib/utils/buildMode'
 
 const isStaticExport = process.env.EXPORT === 'true'
@@ -124,11 +125,21 @@ Slug.propTypes = {
 }
 
 export async function getStaticPaths() {
-  return getStaticPathsBase({
+  const base = await getStaticPathsBase({
     from: 'slug-paths',
     filterFn: row => checkSlugHasNoSlash(row),
     mapPageToParams: row => ({ params: { prefix: row.slug } })
   })
+
+  // 홈에서 링크만 걸어둔 노션 페이지(데이터베이스 페이지 등)도 정적으로 뽑는다.
+  // 이게 없으면 dev 에서는 열리지만 배포 후 404 가 된다.
+  const linkedIds = await getHomeLinkedPageIds()
+  const seen = new Set(base.paths.map(p => p?.params?.prefix))
+  const extra = linkedIds
+    .filter(id => id && !seen.has(id))
+    .map(id => ({ params: { prefix: id } }))
+
+  return { ...base, paths: [...base.paths, ...extra] }
 }
 
 export async function getStaticProps({ params: { prefix }, locale }) {

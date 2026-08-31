@@ -6,7 +6,7 @@ export function EmptyData(pageId?: string): SiteData {
     NOTION_CONFIG: {},
     siteInfo: {
       title: 'NotionNext BLOG',
-      description: '无法获取 Notion 数据',
+      description: 'Notion 데이터를 가져오지 못했습니다',
       pageCover: '/bg_image.jpg',
       icon: '/avatar.svg',
       link: BLOG.LINK

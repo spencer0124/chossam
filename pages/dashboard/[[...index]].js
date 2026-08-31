@@ -39,6 +39,12 @@ export async function getStaticProps({ locale }) {
 }
 
 export const getStaticPaths = () => {
+  // Clerk(회원 기능)을 쓰지 않는 사이트에서는 대시보드 경로를 만들지 않는다.
+  // 그대로 두면 정적 export 에 회원/추천/출금 데모 페이지가 중국어 그대로 배포된다.
+  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+    return { paths: [], fallback: false }
+  }
+
   return {
     paths: [
       { params: { index: [] } }, // 对应首页路径

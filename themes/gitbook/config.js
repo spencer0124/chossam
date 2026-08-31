@@ -1,5 +1,5 @@
 const CONFIG = {
-  GITBOOK_COLOR_PRIMARY: '#16a34a',
+  GITBOOK_COLOR_PRIMARY: '#B40407', //  chossam 학원 로고 레드 (SDS brand500)
 
   GITBOOK_INDEX_PAGE: 'about', // 文档首页显示的文章，请确此路径包含在您的notion数据库中
 

@@ -197,6 +197,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true
   },
+  // 개발 모드 좌하단 Next.js 데브툴 인디케이터(검은 N 원) 숨김.
+  // 정적 export 결과물에는 원래 포함되지 않지만 로컬 확인에 방해가 된다.
+  devIndicators: false,
   output: getOutput(),
   staticPageGenerationTimeout: getStaticPageGenerationTimeoutSec(),
 

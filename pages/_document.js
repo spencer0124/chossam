@@ -16,13 +16,19 @@ const darkModeScript = `
 
   const defaultAppearance = '${BLOG.APPEARANCE || 'auto'}'
 
+  // 라이트 모드 고정 사이트에서는 다크모드 판정 자체를 하지 않는다
+  if (defaultAppearance === 'light') {
+    document.documentElement.classList.add('light')
+    return
+  }
+
   let shouldBeDark = darkMode === 'true' || darkMode === 'dark'
 
   if (darkMode === null) {
     if (defaultAppearance === 'dark') {
       shouldBeDark = true
     } else if (defaultAppearance === 'auto') {
-      // 检查是否在深色模式时间范围内
+      // 야간 모드 시간대인지 확인
       const date = new Date()
       const hours = date.getHours()
       const darkTimeStart = ${BLOG.APPEARANCE_DARK_TIME ? BLOG.APPEARANCE_DARK_TIME[0] : 18}
@@ -32,7 +38,7 @@ const darkModeScript = `
     }
   }
   
-  // 立即设置 html 元素的类
+  // html 요소에 즉시 클래스를 적용
   document.documentElement.classList.add(shouldBeDark ? 'dark' : 'light')
 })()
 `

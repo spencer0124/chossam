@@ -14,13 +14,13 @@ export default function LogoBar(props) {
     <div id='logo-wrapper' className='w-full flex items-center mr-2'>
       <SmartLink
         href={`/${siteConfig('GITBOOK_INDEX_PAGE', '', CONFIG)}`}
-        className='flex text-lg font-bold md:text-2xl dark:text-gray-200 items-center'>
+        className='flex items-center text-base font-bold tracking-tight md:text-xl'>
         <LazyImage
           src={siteInfo?.icon}
-          width={24}
-          height={24}
+          width={30}
+          height={30}
           alt={siteConfig('AUTHOR')}
-          className='mr-2 hidden md:block '
+          className='mr-2 block'
         />
         {siteInfo?.title || siteConfig('TITLE')}
       </SmartLink>

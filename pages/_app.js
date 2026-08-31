@@ -5,6 +5,8 @@ import '@/styles/utility-patterns.css'
 // core styles shared by all of react-notion-x (required)
 import 'react-notion-x/src/styles.css' // 原版的react-notion-x
 import '@/styles/notion.css' //  重写部分notion样式
+import '@/styles/sds-tokens.css' // SDS 토큰 (scripts/sds-to-css.js 생성물)
+import '@/styles/chossam.css' // 사이트 전용 오버라이드 (upstream 파일 대신 여기에)
 
 import useAdjustStyle from '@/hooks/useAdjustStyle'
 import { GlobalContextProvider } from '@/lib/global'

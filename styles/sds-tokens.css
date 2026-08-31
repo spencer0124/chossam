@@ -1,0 +1,132 @@
+/*
+ * 이 파일은 scripts/sds-to-css.js 가 생성한다. 직접 수정하지 마라.
+ * 원본: src/design-system/tokens/*  (pindom 에서 복사한 SDS — Toss TDS 기반)
+ * 값을 바꾸려면 토큰 파일이나 생성기의 BRAND 를 고치고 다시 실행:
+ *   node scripts/sds-to-css.js
+ */
+:root {
+  /* ── 브랜드 (학원 로고 레드) ── */
+  --sds-brand50: #FBF0F0;
+  --sds-brand100: #F5DCDC;
+  --sds-brand200: #E6AAAB;
+  --sds-brand400: #C53B3E;
+  --sds-brand500: #B40407;
+  --sds-brand600: #9B0306;
+  --sds-brand700: #7E0305;
+  --sds-primary: #B40407;
+  --sds-primary-hover: #9B0306;
+  --sds-primary-tint: #FBF0F0;
+
+  /* ── SDS 색 토큰 ── */
+  --sds-grey50: #F9FAFB;
+  --sds-grey100: #F2F4F6;
+  --sds-grey200: #E5E8EB;
+  --sds-grey300: #D1D6DB;
+  --sds-grey400: #B0B8C1;
+  --sds-grey500: #8B95A1;
+  --sds-grey600: #6B7684;
+  --sds-grey700: #4E5968;
+  --sds-grey800: #333D4B;
+  --sds-grey900: #191F28;
+  --sds-greyOpacity50: rgba(0, 23, 51, 0.02);
+  --sds-greyOpacity200: rgba(0, 27, 55, 0.10);
+  --sds-greyOpacity500: rgba(3, 24, 50, 0.46);
+  --sds-greyOpacity800: rgba(0, 12, 30, 0.80);
+  --sds-greyOpacity900: rgba(2, 9, 19, 0.91);
+  --sds-red50: #FFEEEE;
+  --sds-red500: #F04452;
+  --sds-green50: #F0FAF6;
+  --sds-green500: #03B26C;
+  --sds-orange50: #FFF3E0;
+  --sds-orange500: #FE9800;
+  --sds-yellow50: #FFF9E7;
+  --sds-yellow400: #FFD158;
+  --sds-yellow500: #FFC342;
+  --sds-yellow800: #EE8F11;
+  --sds-yellow900: #DD7D02;
+  --sds-teal50: #EDF8F8;
+  --sds-teal500: #18A5A5;
+  --sds-highlight: #FFE08C;
+  --sds-background: #FFFFFF;
+  --sds-greyBackground: #F7F7F8;
+  --sds-layeredBackground: #FFFFFF;
+  --sds-floatedBackground: #FFFFFF;
+  --sds-darkSurface: #171719;
+  --sds-darkSurfaceRaised: #2F2F30;
+  --sds-darkSurfaceRaisedAlt: #383839;
+  --sds-ground: #0B0B0B;
+  --sds-groundRaised: #131313;
+  --sds-groundChrome: #171719;
+  --sds-acid500: #58CF04;
+  --sds-alert500: #FF5E00;
+  --sds-ink: #FFFFFF;
+  --sds-inkOpacity700: rgba(255, 255, 255, 0.70);
+  --sds-inkOpacity500: rgba(255, 255, 255, 0.50);
+  --sds-inkOpacity450: rgba(255, 255, 255, 0.45);
+  --sds-inkOpacity420: rgba(255, 255, 255, 0.42);
+  --sds-inkOpacity400: rgba(255, 255, 255, 0.40);
+  --sds-inkOpacity350: rgba(255, 255, 255, 0.35);
+  --sds-rule: rgba(255, 255, 255, 0.14);
+
+  /* ── 반경 ── */
+  --sds-radius-xs: 4px;
+  --sds-radius-sm: 8px;
+  --sds-radius-md: 12px;
+  --sds-radius-lg: 14px;
+  --sds-radius-xl: 16px;
+  --sds-radius-full: 20px;
+
+  /* ── 간격 ── */
+  --sds-space-xxs: 2px;
+  --sds-space-xs: 4px;
+  --sds-space-sm: 8px;
+  --sds-space-md: 12px;
+  --sds-space-base: 16px;
+  --sds-space-lg: 20px;
+  --sds-space-xl: 24px;
+  --sds-space-xxl: 32px;
+
+  /* ── 타이포 (size / line-height / weight) ── */
+  --sds-t1-size: 30px;
+  --sds-t1-line: 40px;
+  --sds-t1-weight: 700;
+  --sds-t2-size: 26px;
+  --sds-t2-line: 35px;
+  --sds-t2-weight: 700;
+  --sds-t3-size: 22px;
+  --sds-t3-line: 31px;
+  --sds-t3-weight: 700;
+  --sds-t4-size: 20px;
+  --sds-t4-line: 29px;
+  --sds-t4-weight: 700;
+  --sds-t5-size: 17px;
+  --sds-t5-line: 25.5px;
+  --sds-t5-weight: 400;
+  --sds-t6-size: 15px;
+  --sds-t6-line: 22.5px;
+  --sds-t6-weight: 400;
+  --sds-t7-size: 13px;
+  --sds-t7-line: 19.5px;
+  --sds-t7-weight: 400;
+  --sds-sub5-size: 24px;
+  --sds-sub5-line: 33px;
+  --sds-sub5-weight: 700;
+  --sds-sub8-size: 19px;
+  --sds-sub8-line: 28px;
+  --sds-sub8-weight: 400;
+  --sds-sub10-size: 16px;
+  --sds-sub10-line: 24px;
+  --sds-sub10-weight: 400;
+  --sds-sub12-size: 12px;
+  --sds-sub12-line: 18px;
+  --sds-sub12-weight: 400;
+  --sds-sub13-size: 11px;
+  --sds-sub13-line: 16.5px;
+  --sds-sub13-weight: 600;
+
+  /* ── 그림자 ── */
+  --sds-shadow-card: 0px 1px 3px rgba(0, 0, 0, 0.04);
+  --sds-shadow-elevated: 0px 4px 12px rgba(0, 0, 0, 0.08);
+  --sds-shadow-bottomSheet: 0px -2px 8px rgba(0, 0, 0, 0.06);
+  --sds-shadow-segmentedIndicator: 0px 1px 2px rgba(0, 0, 0, 0.09);
+}
