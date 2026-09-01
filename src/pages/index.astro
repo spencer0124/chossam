@@ -28,16 +28,32 @@ const posts = (await getCollection('posts')).map(entry => ({
     <Image
       src={promo}
       alt="초5-중1 골든타임 프로그램. 33개월이면 고1 모의고사 1등급을 받습니다. 5학년에 시작해 33개월 꾸준히 공부하면 학생들은 고1 모의고사 1등급을 받고 중2부터 고2 과정을 공부합니다. 초5도 가능합니다. 당연히 뒤쳐진 고학년도 가능합니다!"
-      widths={[480, 720, 900]}
-      sizes="(max-width: 900px) 100vw, 900px"
+      widths={[400, 600, 800, 1200]}
+      sizes="(max-width: 440px) calc(100vw - 40px), 400px"
       loading="eager"
     />
   </figure>
 </Base>
 
 <style>
+  /**
+   * The banner's text is baked into the artwork, so the image's width *is* its
+   * type scale. Left to fill the 900px column the near-square art (1772x1537)
+   * renders 860x746 and eats a laptop viewport on its own, which is why this
+   * is capped well under the column.
+   *
+   * 400px is a deliberate call for a quiet banner over readable fine print:
+   * the stat captions land around 7px here, well below the ~11px they would
+   * need, and only the headline survives at a glance. The `alt` above carries
+   * the whole message, so nothing is lost to a screen reader — only to a
+   * sighted reader who wanted to read the small print.
+   *
+   * Change this and the `sizes` above has to follow, or the browser fetches a
+   * candidate wider than the slot it ends up in.
+   */
   .promo {
-    margin: 56px 0 0;
+    max-width: 400px;
+    margin: 56px auto 0;
   }
 
   .promo :global(img) {
